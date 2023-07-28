@@ -41,5 +41,7 @@ def global_bar(k: np.ndarray, angle: float) -> tuple[np.ndarray, np.ndarray]:
     Khat = T.T @ k @ T
     return Khat, T
 
+def find_bar_info(E: float, A: float, L: float, Khat: np.ndarray, Assemby: np.ndarray, q: np.ndarray)
+
 if __name__ == "__main__":
     print("This is the main file for the pyfea module")

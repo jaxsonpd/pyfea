@@ -2,7 +2,7 @@
 # @brief a file to test the pyfea module
 # @author Jack Duignan (JackpDuignan@gmail.com)
 
-import pyfea
+from pyfea import pyfea
 import unittest
 import numpy as np
 
@@ -80,6 +80,31 @@ class Test_global_bar(unittest.TestCase):
 
         np.testing.assert_array_equal(actual_lambda, expected_Lambda)
         np.testing.assert_array_equal(np.round(actual_Khat, -5), np.round(expected_khat, -5))
+
+    def test_rotated_actual_bar(self) -> None:
+        """ Find the global stiffness matrix of a rotated bar of actual dimensions """
+        k1 = np.array([[1.57079633e+08, -1.57079633e+08], [-1.57079633e+08, 1.57079633e+08]])
+        angle = 45
+
+        expected_Lambda = np.array([[0.707107, 0.707107, 0.      , 0.      ],[0.      , 0.      , 0.707107, 0.707107]])
+        expected_khat = np.array([[ 78500000.,  78500000., -78500000., -78500000.],
+       [ 78500000.,  78500000., -78500000., -78500000.],
+       [-78500000., -78500000.,  78500000.,  78500000.],
+       [-78500000., -78500000.,  78500000.,  78500000.]])
+
+        actual_Khat, actual_lambda = pyfea.global_bar(k1, angle)
+
+        np.testing.assert_array_equal(np.round(actual_lambda, 4), np.round(expected_Lambda, 4))
+        np.testing.assert_array_equal(np.round(actual_Khat, -5), np.round(expected_khat, -5))
+
+class test_find_bar_info(unittest.TestCase):
+    """ Test the find bar info function"""
+    def setUp(self) -> None:
+        pass
+
+    def test_find_bar_info(self) -> None:
+        """ Test the find bar info function """
+        pass
 
 
 if __name__ == "__main__":
