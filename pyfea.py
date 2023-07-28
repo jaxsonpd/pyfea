@@ -23,22 +23,22 @@ def local_bar(E: float, A: float, L: float) -> np.ndarray:
     base_matrix = np.array([[1, -1], [-1, 1]])
     return (E * A)/(L) * base_matrix 
 
-def global_bar(k1: np.ndarray, angle: float) -> tuple[np.ndarray, np.ndarray]:
+def global_bar(k: np.ndarray, angle: float) -> tuple[np.ndarray, np.ndarray]:
     """ Creates the stiffness matrix for a bar element in global coordinates
     ### Parameters:
-    k1 : ndarray
+    k : ndarray
         The local stiffness matrix for the bar element
     angle : float
-        The angle of the bar element in radians
+        The angle of the bar element in degrees
 
     ### Returns:
     out: tuple[ndarray, ndarray]
         A tuple containing the global stiffness matrix and the transformation matrix
     """
-    c = np.cos(angle)
-    s = np.sin(angle)
+    c = np.cos(np.deg2rad(angle))
+    s = np.sin(np.deg2rad(angle))
     T = np.array([[c, s, 0, 0], [0, 0, c, s]])
-    Khat = T.T @ k1 @ T
+    Khat = T.T @ k @ T
     return Khat, T
 
 if __name__ == "__main__":
