@@ -2,7 +2,7 @@
 # @brief a file to test the pyfea module
 # @author Jack Duignan (JackpDuignan@gmail.com)
 
-from pyfea import pyfea
+from pyfea import bar
 import unittest
 import numpy as np
 
@@ -19,7 +19,7 @@ class Test_local_bar(unittest.TestCase):
 
         expected = np.array([[1, -1], [-1, 1]])
 
-        actual = pyfea.local_bar(E, A, L)
+        actual = bar.local_bar(E, A, L)
 
         np.testing.assert_array_equal(actual, expected)
 
@@ -31,7 +31,7 @@ class Test_local_bar(unittest.TestCase):
 
         expected = np.array([[ 0.5, -0.5],[-0.5,  0.5]])
 
-        actual = pyfea.local_bar(E, A, L)
+        actual = bar.local_bar(E, A, L)
 
         np.testing.assert_array_equal(actual, expected)
 
@@ -43,7 +43,7 @@ class Test_local_bar(unittest.TestCase):
 
         expected = np.array([[1.57079633e+08, -1.57079633e+08], [-1.57079633e+08, 1.57079633e+08]])
 
-        actual = pyfea.local_bar(E, A, L)
+        actual = bar.local_bar(E, A, L)
 
         np.testing.assert_array_almost_equal(np.round(actual, -5), np.round(expected, -5))
 
@@ -60,7 +60,7 @@ class Test_global_bar(unittest.TestCase):
         expected_Khat = np.array([[1, 0, -1, 0], [0, 0, 0, 0], [-1, 0, 1, 0], [0, 0, 0, 0]])
         expected_Lambda = np.array([[1, 0, 0, 0], [0, 0, 1, 0]])
 
-        actual_Khat, actual_lambda = pyfea.global_bar(k1, angle)
+        actual_Khat, actual_lambda = bar.global_bar(k1, angle)
 
         np.testing.assert_array_equal(actual_Khat, expected_Khat)
         np.testing.assert_array_equal(actual_lambda, expected_Lambda)
@@ -76,7 +76,7 @@ class Test_global_bar(unittest.TestCase):
                                 [-1.571e+08,  0.000e+00,  1.571e+08,  0.000e+00],
                                 [ 0.000e+00,  0.000e+00,  0.000e+00,  0.000e+00]])
 
-        actual_Khat, actual_lambda = pyfea.global_bar(k1, angle)
+        actual_Khat, actual_lambda = bar.global_bar(k1, angle)
 
         np.testing.assert_array_equal(actual_lambda, expected_Lambda)
         np.testing.assert_array_equal(np.round(actual_Khat, -5), np.round(expected_khat, -5))
@@ -92,7 +92,7 @@ class Test_global_bar(unittest.TestCase):
        [-78500000., -78500000.,  78500000.,  78500000.],
        [-78500000., -78500000.,  78500000.,  78500000.]])
 
-        actual_Khat, actual_lambda = pyfea.global_bar(k1, angle)
+        actual_Khat, actual_lambda = bar.global_bar(k1, angle)
 
         np.testing.assert_array_equal(np.round(actual_lambda, 4), np.round(expected_Lambda, 4))
         np.testing.assert_array_equal(np.round(actual_Khat, -5), np.round(expected_khat, -5))
