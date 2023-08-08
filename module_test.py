@@ -97,15 +97,6 @@ class Test_global_bar(unittest.TestCase):
         np.testing.assert_array_equal(np.round(actual_lambda, 4), np.round(expected_Lambda, 4))
         np.testing.assert_array_equal(np.round(actual_Khat, -5), np.round(expected_khat, -5))
 
-class test_find_bar_info(unittest.TestCase):
-    """ Test the find bar info function"""
-    def setUp(self) -> None:
-        pass
-
-    def test_find_bar_info(self) -> None:
-        """ Test the find bar info function """
-        pass
-
 
 if __name__ == "__main__":
     unittest.main()
