@@ -30,6 +30,7 @@ def local_frame(E: float, I:float, A:float, L:float) -> np.ndarray:
                             [-beta, 0, 0, beta, 0, 0],
                             [0, -12, -6 * L, 0, 12, -6 * L],
                             [0, 6 * L, 2 * L**2, 0, -6 * L, 4 * L**2]])
+
     return (E * I / L**3) * base_matrix
 
 
@@ -58,6 +59,20 @@ def global_frame(k: np.ndarray, angle: float) -> tuple[np.ndarray, np.ndarray]:
 
     return Khat, LambdaMat
 
+
+def assemble_frame(Khat: np.ndarray, A: np.ndarray) -> np.ndarray:
+    """ Assembles the global stiffness matrix for a frame element
+    ### Parameters:
+    Khat : ndarray
+        The global stiffness matrix for the frame element
+    A : ndarray
+        The assembly matrix for the frame element
+
+    ### Returns:
+    out: ndarray
+        The global stiffness matrix for the frame element KG
+    """
+    return A @ Khat @ A.T
 
 def plot_deflected_frame(node1XG: float, node1YG: float, node2XG: float, node2YG: float, d_e: np.ndarray, N_points: float = 100, disp_scale: float = 100):
     """ Plot the fully deflected frame shape 
@@ -88,7 +103,7 @@ def plot_deflected_frame(node1XG: float, node1YG: float, node2XG: float, node2YG
     x_e = np.linspace(0, L, N_points)
 
     # Find local shape functions
-    axial_1 = (1 - x_e)/L
+    axial_1 = 1 - x_e/L
     axial_2 = x_e/L
 
     trans_1 = 1 - 3 * (x_e/L)**2 + 2 * (x_e/L)**3

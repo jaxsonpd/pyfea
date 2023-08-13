@@ -41,5 +41,52 @@ def global_bar(k: np.ndarray, angle: float) -> tuple[np.ndarray, np.ndarray]:
     Khat = T.T @ k @ T
     return Khat, T
 
+def assemble_bar(Khat: np.ndarray, A: np.ndarray, q: np.ndarray) -> np.ndarray:
+    """ Assembles the bar element into the global stiffness matrix
+    ### Parameters:
+    Khat : ndarray
+        The global stiffness matrix for the bar element
+    A : ndarray
+        The assembly matrix for the bar element
+    q : ndarray
+        The global displacement vector
+
+    ### Returns:
+    out: ndarray
+        The assembled global stiffness matrix
+    """
+    return A @ Khat @ A.T
+
+def plot_deflected_bar(node1XG: float, node1YG: float, node2XG: float, node2YG: float, d_e: np.ndarray, disp_scale: float = 100) -> None:
+    """ Plot the deflected and undeformed shape of a bar element
+    ### Parameters:
+    node1XG : float
+        The global X coordinate of node 1
+    node1YG : float
+        The global Y coordinate of node 1
+    node2XG : float
+        The global X coordinate of node 2
+    node2YG : float
+        The global Y coordinate of node 2
+    d_e : ndarray
+        The local displacement vector for the bar element
+    disp_scale : float (100)
+        The scale of the displacement vector
+    
+    ### Returns:
+    out: None
+    """
+    L = np.sqrt((node2XG-node1XG)**2 + (node2YG-node1YG)**2)
+    angle = np.rad2deg(np.arctan2(node2YG-node1YG, node2XG-node1XG))
+
+    # Plot the undeformed shape
+    plt.plot([node1XG, node2XG], [node1YG, node2YG], 'k-', label='Undeformed')
+
+    # Plot the deflected shape
+    plt.plot([node1XG, node2XG+float(d_e[0])*disp_scale], [node1YG, node2YG+float(d_e[1])*disp_scale], 'r-', label='Deflected')
+
+
+
+
 if __name__ == "__main__":
     print("This is the file containg the bar element functions")

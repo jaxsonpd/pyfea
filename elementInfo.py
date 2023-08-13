@@ -51,3 +51,21 @@ def findStrain(d: np.ndarray, L: float) -> float:
         The strain in the bar element
     """
     return (d[1]-d[0]) / L
+
+def findLocal(Khat: np.ndarray, A: np.ndarray, lambdaMat: np.array, q: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """ Find the local force and displacement vectors for the bar element 
+    ### Parameters:
+    Khat : ndarray
+        The global stiffness matrix for the bar element
+    A : ndarray
+        The assembly matrix for the bar element
+    lambdaMat : ndarray
+        The local force vector for the bar element
+    q : ndarray
+        The global displacement vector
+
+    ### Returns:
+    out: tuple[ndarray, ndarray]
+        A tuple containing the local force and displacement vectors for the bar element
+    """
+    return findForce(Khat, A, q), findDisplacement(lambdaMat, A, q)
