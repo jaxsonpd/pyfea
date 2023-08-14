@@ -130,3 +130,170 @@ def plot_deflected_frame(node1XG: float, node1YG: float, node2XG: float, node2YG
     # Plot the frame
     plt.plot(Undeflected_XG, Undeflected_YG, 'k--', label='Undeflected')
     plt.plot(Deflected_XG, Deflected_YG, 'g-', label='Deflected')
+
+def find_UDL(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndarray) -> np.ndarray:
+    """ Creates a uniform distributed load vector for a frame element
+    ### Parameters:
+    L : float
+        The length of the frame element
+    wHat : float
+        The magnitude of the uniform distributed load in the local coordinate system
+    lambdaMat : ndarray
+        The transformation matrix for the frame element
+    Assem : ndarray
+        The assembly matrix for the frame element
+        
+    ### Returns:
+    out: ndarray
+        The uniform distributed load vector for the frame element
+    """
+
+    # Find the local uniform distributed load vector
+    f_e = np.array([[0],
+                    [wHat * L / 2],
+                    [wHat * L**2 / 12],
+                    [0],
+                    [wHat * L / 2],
+                    [-wHat * L**2 / 12]])
+
+    # Transform to global coordinates
+    f_G = lambdaMat.T @ f_e
+
+    # Assemble the load vector
+    return Assem @ f_G
+
+def find_LVL(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndarray) -> np.ndarray:
+    """ Creates a linearly varying load vector for a frame element
+    ### Parameters:
+    L : float
+        The length of the frame element
+    wHat : float
+        The magnitude of the linearly varying load in the local coordinate system
+    lambdaMat : ndarray
+        The transformation matrix for the frame element
+    Assem : ndarray
+        The assembly matrix for the frame element
+        
+    ### Returns:
+    out: ndarray
+        The linearly varying load vector for the frame element
+    """
+
+    # Find the local linearly varying load vector
+    f_e = np.array([[0],
+                    [3 * wHat * L / 20],
+                    [wHat * L**2 / 30],
+                    [0],
+                    [7 * wHat * L / 20],
+                    [-wHat * L**2 / 20]])
+
+    # Transform to global coordinates
+    f_G = lambdaMat.T @ f_e
+
+    # Assemble the load vector
+    return Assem @ f_G
+
+def find_point_load(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndarray, a: float = -1) -> np.ndarray:
+    """ Creates a point load vector for a frame element
+    ### Parameters:
+    L : float
+        The length of the frame element
+    wHat : float
+        The magnitude of the point load in the local coordinate system
+    lambdaMat : ndarray
+        The transformation matrix for the frame element
+    Assem : ndarray
+        The assembly matrix for the frame element
+    a : float (-1)
+        The distance from the first node to the point load if -1 then point load 
+        is halfway along the frame element
+        
+    ### Returns:
+    out: ndarray
+        The point load vector for the frame element
+    """
+
+    if (a == -1):
+        a = L / 2
+
+    # Find the local point load vector
+    f_e = wHat * np.array([[0],
+                           [1-3*(a/L)**2+2*(a/L)**3],
+                           [(a**3/L**2)-(2*a**2)/L+a],
+                           [0],
+                           [3*(a/L)**2-2*(a/L)**3],
+                           [(a**3/L**2)-(a**2)/L]])
+
+    # Transform to global coordinates
+    f_G = lambdaMat.T @ f_e
+
+    # Assemble the load vector
+    return Assem @ f_G
+
+def find_axial_UDL(L: float, pHat: float, lambdaMat: np.ndarray, Assem: np.ndarray, ) -> np.ndarray:
+    """ Creates an axial uniform distributed load vector for a frame element
+    ### Parameters:
+    L : float
+        The length of the frame element
+    pHat : float
+        The magnitude of the axial uniform distributed load in the local coordinate system
+    lambdaMat : ndarray
+        The transformation matrix for the frame element
+    Assem : ndarray
+        The assembly matrix for the frame element
+        
+    ### Returns:
+    out: ndarray
+        The axial uniform distributed load vector for the frame element
+    """
+
+    # Find the local axial uniform distributed load vector
+    f_e = np.array([[L/2],
+                    [0],
+                    [0],
+                    [L/2],
+                    [0],
+                    [0]])
+
+    # Transform to global coordinates
+    f_G = lambdaMat.T @ f_e
+
+    # Assemble the load vector
+    return Assem @ f_G
+
+def find_axial_point_load(L: float, pHat: float, lambdaMat: np.ndarray, Assem: np.ndarray, a: float = -1) -> np.ndarray:
+    """ Creates an axial point load vector for a frame element
+    ### Parameters:
+    L : float
+        The length of the frame element
+    pHat : float
+        The magnitude of the axial point load in the local coordinate system
+    lambdaMat : ndarray
+        The transformation matrix for the frame element
+    Assem : ndarray
+        The assembly matrix for the frame element
+    a : float (-1)
+        The distance from the first node to the axial point load if -1 then axial point load 
+        is halfway along the frame element
+        
+    ### Returns:
+    out: ndarray
+        The axial point load vector for the frame element
+    """
+
+    if (a == -1):
+        a = L / 2
+
+    # Find the local axial point load vector
+    f_e = pHat * np.array([[1-(a/l)],
+                           [0],
+                           [0],
+                           [a/L],
+                           [0],
+                           [0]])
+
+    # Transform to global coordinates
+    f_G = lambdaMat.T @ f_e
+
+    # Assemble the load vector
+    return Assem @ f_G
