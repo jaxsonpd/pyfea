@@ -74,7 +74,7 @@ def assemble_frame(Khat: np.ndarray, A: np.ndarray) -> np.ndarray:
     """
     return A @ Khat @ A.T
 
-def plot_deflected_frame(node1XG: float, node1YG: float, node2XG: float, node2YG: float, d_e: np.ndarray, N_points: float = 100, disp_scale: float = 100):
+def plot_deflected_frame(node1XG: float, node1YG: float, node2XG: float, node2YG: float, d_e: np.ndarray, N_points: float = 100, disp_scale: float = 10):
     """ Plot the fully deflected frame shape 
     ### Parameters:
     node1XG : float
@@ -89,7 +89,7 @@ def plot_deflected_frame(node1XG: float, node1YG: float, node2XG: float, node2YG
         The displacement vector of the frame element (6x1)
     N_points : float (100)
         The number of points to plot along the frame element miniumum 20 recommended
-    disp_scale : float (100)
+    disp_scale : float (10)
         The scale of the displacements in the plot
         
     ### Returns:
@@ -131,7 +131,7 @@ def plot_deflected_frame(node1XG: float, node1YG: float, node2XG: float, node2YG
     plt.plot(Undeflected_XG, Undeflected_YG, 'k--', label='Undeflected')
     plt.plot(Deflected_XG, Deflected_YG, 'g-', label='Deflected')
 
-def find_UDL(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndarray) -> np.ndarray:
+def find_UDL(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndarray) -> [np.ndarray, np.ndarray, np.ndarray]:
     """ Creates a uniform distributed load vector for a frame element
     ### Parameters:
     L : float
@@ -160,7 +160,7 @@ def find_UDL(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndarray) ->
     f_G = lambdaMat.T @ f_e
 
     # Assemble the load vector
-    return Assem @ f_G
+    return Assem @ f_G, f_G, f_e
 
 def find_LVL(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndarray) -> np.ndarray:
     """ Creates a linearly varying load vector for a frame element
@@ -186,7 +186,8 @@ def find_LVL(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndarray) ->
                     [0],
                     [7 * wHat * L / 20],
                     [-wHat * L**2 / 20]])
-
+    
+    
     # Transform to global coordinates
     f_G = lambdaMat.T @ f_e
 
@@ -285,7 +286,7 @@ def find_axial_point_load(L: float, pHat: float, lambdaMat: np.ndarray, Assem: n
         a = L / 2
 
     # Find the local axial point load vector
-    f_e = pHat * np.array([[1-(a/l)],
+    f_e = pHat * np.array([[1-(a/L)],
                            [0],
                            [0],
                            [a/L],
