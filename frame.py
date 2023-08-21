@@ -162,7 +162,7 @@ def find_UDL(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndarray) ->
     # Assemble the load vector
     return Assem @ f_G, f_G, f_e
 
-def find_LVL(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndarray) -> np.ndarray:
+def find_LVL(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndarray) -> [np.ndarray, np.ndarray, np.ndarray]:
     """ Creates a linearly varying load vector for a frame element
     ### Parameters:
     L : float
@@ -175,8 +175,8 @@ def find_LVL(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndarray) ->
         The assembly matrix for the frame element
         
     ### Returns:
-    out: ndarray
-        The linearly varying load vector for the frame element
+    out: [ndarray, ndarray, ndarray]
+        The linearly varying load vector in the global and element coordinate systems
     """
 
     # Find the local linearly varying load vector
@@ -192,7 +192,7 @@ def find_LVL(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndarray) ->
     f_G = lambdaMat.T @ f_e
 
     # Assemble the load vector
-    return Assem @ f_G
+    return Assem @ f_G, f_G, f_e
 
 def find_point_load(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndarray, a: float = -1) -> np.ndarray:
     """ Creates a point load vector for a frame element
@@ -210,8 +210,8 @@ def find_point_load(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndar
         is halfway along the frame element
         
     ### Returns:
-    out: ndarray
-        The point load vector for the frame element
+    out: [ndarray, ndarray, ndarray]
+        The linearly varying load vector in the global and element coordinate systems
     """
 
     if (a == -1):
@@ -229,7 +229,7 @@ def find_point_load(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndar
     f_G = lambdaMat.T @ f_e
 
     # Assemble the load vector
-    return Assem @ f_G
+    return Assem @ f_G, f_G, f_e
 
 def find_axial_UDL(L: float, pHat: float, lambdaMat: np.ndarray, Assem: np.ndarray, ) -> np.ndarray:
     """ Creates an axial uniform distributed load vector for a frame element
@@ -244,12 +244,12 @@ def find_axial_UDL(L: float, pHat: float, lambdaMat: np.ndarray, Assem: np.ndarr
         The assembly matrix for the frame element
         
     ### Returns:
-    out: ndarray
-        The axial uniform distributed load vector for the frame element
+    out: [ndarray, ndarray, ndarray]
+        The linearly varying load vector in the global and element coordinate systems
     """
 
     # Find the local axial uniform distributed load vector
-    f_e = np.array([[L/2],
+    f_e = pHat* np.array([[L/2],
                     [0],
                     [0],
                     [L/2],
@@ -260,7 +260,7 @@ def find_axial_UDL(L: float, pHat: float, lambdaMat: np.ndarray, Assem: np.ndarr
     f_G = lambdaMat.T @ f_e
 
     # Assemble the load vector
-    return Assem @ f_G
+    return Assem @ f_G, f_G, f_e
 
 def find_axial_point_load(L: float, pHat: float, lambdaMat: np.ndarray, Assem: np.ndarray, a: float = -1) -> np.ndarray:
     """ Creates an axial point load vector for a frame element
@@ -278,8 +278,8 @@ def find_axial_point_load(L: float, pHat: float, lambdaMat: np.ndarray, Assem: n
         is halfway along the frame element
         
     ### Returns:
-    out: ndarray
-        The axial point load vector for the frame element
+    out: [ndarray, ndarray, ndarray]
+        The linearly varying load vector in the global and element coordinate systems
     """
 
     if (a == -1):
@@ -297,4 +297,95 @@ def find_axial_point_load(L: float, pHat: float, lambdaMat: np.ndarray, Assem: n
     f_G = lambdaMat.T @ f_e
 
     # Assemble the load vector
-    return Assem @ f_G
+    return Assem @ f_G, f_G, f_e
+
+def find_global_point_defelections(x_e: float, L: float, d_e: np.ndarray, angle: float) -> [float, float]:
+    """ Find the deflections in global coordinates at a spesifice frame point
+    ### Parameters:
+    x_e : float
+        The distance from the first node to the point of interest
+    L : float
+        The length of the frame element
+    d_e : ndarray
+        The displacement vector of the frame element (6x1)
+    angle : float
+        The angle of the frame element in degrees
+
+    ### Returns:
+    out: [float, float]
+        The deflections in the X and Y directions in the global coordinate system
+    """
+    axial_1 = 1 - x_e/L
+    axial_2 = x_e/L
+
+    trans_1 = 1 - 3 * (x_e/L)**2 + 2 * (x_e/L)**3
+    trans_2 = (x_e**3/L**2) - (2 * x_e**2)/L + x_e
+    trans_3 = 3 * (x_e/L)**2 - 2 * (x_e/L)**3
+    trans_4 = (x_e**3/L**2) - (x_e**2)/L
+
+    # Find overall deflections in axial and transverse directions
+    axial = axial_1 * d_e[0] + axial_2 * d_e[3]
+    trans = trans_1 * d_e[1] + trans_2 * d_e[2] + trans_3 * d_e[4] + trans_4 * d_e[5]
+
+    X_G = axial * np.cos(np.deg2rad(angle)) - trans * np.sin(np.deg2rad(angle))
+    Y_G = axial * np.sin(np.deg2rad(angle)) + trans * np.cos(np.deg2rad(angle))
+
+    return X_G, Y_G
+
+def find_local_point_defelections(x_e: float, L: float, d_e: np.ndarray) -> [float, float]:
+    """ Find the axial and transverse deflections in local coordinates at a spesifice frame point
+    ### Parameters:
+    x_e : float
+        The distance from the first node to the point of interest
+    L : float
+        The length of the frame element
+    d_e : ndarray
+        The displacement vector of the frame element (6x1)
+        
+    ### Returns:
+    out: [float, float]
+        The deflections in the axial and transverse directions in the local coordinate system
+    """
+    axial_1 = 1 - x_e/L
+    axial_2 = x_e/L
+
+    trans_1 = 1 - 3 * (x_e/L)**2 + 2 * (x_e/L)**3
+    trans_2 = (x_e**3/L**2) - (2 * x_e**2)/L + x_e
+    trans_3 = 3 * (x_e/L)**2 - 2 * (x_e/L)**3
+    trans_4 = (x_e**3/L**2) - (x_e**2)/L
+
+    # Find overall deflections in axial and transverse directions
+    axial = axial_1 * d_e[0] + axial_2 * d_e[3]
+    trans = trans_1 * d_e[1] + trans_2 * d_e[2] + trans_3 * d_e[4] + trans_4 * d_e[5]
+
+    return axial, trans
+
+def find_Strain(d: np.ndarray, L: float) -> float:
+    """ Find the strain in the frame element 
+    ### Parameters:
+    d : ndarray
+        The local displacement vector for the frame element
+    L : float
+        The length of the frame element
+
+    ### Returns:
+    out: float
+        The strain in the frame element
+    """
+    return (d[3]-d[0]) / L
+
+def find_Stress(E: float, d: np.ndarray, L: float) -> float:
+    """ Find the stress in the frame element 
+    ### Parameters:
+    E : float
+        The modulus of elasticity of the frame element
+    d : ndarray
+        The local displacement vector for the frame element
+    L : float
+        The length of the frame element
+
+    ### Returns:
+    out: float
+        The stress in the bar element
+    """
+    return E * (d[3]-d[0]) / L

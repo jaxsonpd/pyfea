@@ -37,7 +37,7 @@ def findFrameStress(E: float, d: np.ndarray, L: float) -> float:
     return E * findFrameStrain(d, L)
 
 
-def findLocal(K: np.ndarray, Assem: np.ndarray, lambdaMat: np.ndarray, q: np.ndarray) -> [np.ndarray, np.ndarray]:
+def find_Local(K: np.ndarray, Assem: np.ndarray, lambdaMat: np.ndarray, q: np.ndarray) -> [np.ndarray, np.ndarray]:
     """ Find the local force and displacement vectors for the frame element
     ### Parameters:
     K : ndarray
@@ -59,7 +59,7 @@ def findLocal(K: np.ndarray, Assem: np.ndarray, lambdaMat: np.ndarray, q: np.nda
 
     return f_e, d_e
 
-def findGlobal(Khat: np.ndarray, Assem: np.ndarray, q: np.ndarray) -> [np.ndarray, np.ndarray]:
+def find_Global(Khat: np.ndarray, Assem: np.ndarray, q: np.ndarray) -> [np.ndarray, np.ndarray]:
     """ Find the global force and displacement vectors for the frame element 
     ### Parameters:
     Khat : ndarray
