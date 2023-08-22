@@ -6,38 +6,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def findFrameStrain(d: np.ndarray, L: float) -> float:
-    """ Find the strain in the frame element 
-    ### Parameters:
-    d : ndarray
-        The local displacement vector for the frame element
-    L : float
-        The length of the frame element
-
-    ### Returns:
-    out: float
-        The strain in the frame element
-    """
-    return (d[3]-d[0]) / L
-
-def findFrameStress(E: float, d: np.ndarray, L: float) -> float:
-    """ Find the stress in the frame element 
-    ### Parameters:
-    E : float
-        The modulus of elasticity of the frame element
-    d : ndarray
-        The local displacement vector for the frame element
-    L : float
-        The length of the frame element
-
-    ### Returns:
-    out: float
-        The stress in the bar element
-    """
-    return E * findFrameStrain(d, L)
-
-
-def find_Local(K: np.ndarray, Assem: np.ndarray, lambdaMat: np.ndarray, q: np.ndarray) -> [np.ndarray, np.ndarray]:
+def find_local(K: np.ndarray, Assem: np.ndarray, lambdaMat: np.ndarray, q: np.ndarray) -> [np.ndarray, np.ndarray]:
     """ Find the local force and displacement vectors for the frame element
     ### Parameters:
     K : ndarray
@@ -59,7 +28,7 @@ def find_Local(K: np.ndarray, Assem: np.ndarray, lambdaMat: np.ndarray, q: np.nd
 
     return f_e, d_e
 
-def find_Global(Khat: np.ndarray, Assem: np.ndarray, q: np.ndarray) -> [np.ndarray, np.ndarray]:
+def find_global(Khat: np.ndarray, Assem: np.ndarray, q: np.ndarray) -> [np.ndarray, np.ndarray]:
     """ Find the global force and displacement vectors for the frame element 
     ### Parameters:
     Khat : ndarray

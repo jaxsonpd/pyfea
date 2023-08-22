@@ -131,7 +131,8 @@ def plot_deflected_frame(node1XG: float, node1YG: float, node2XG: float, node2YG
     plt.plot(Undeflected_XG, Undeflected_YG, 'k--', label='Undeflected')
     plt.plot(Deflected_XG, Deflected_YG, 'g-', label='Deflected')
 
-def find_UDL(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndarray) -> [np.ndarray, np.ndarray, np.ndarray]:
+
+def UDL(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndarray) -> [np.ndarray, np.ndarray, np.ndarray]:
     """ Creates a uniform distributed load vector for a frame element
     ### Parameters:
     L : float
@@ -162,13 +163,13 @@ def find_UDL(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndarray) ->
     # Assemble the load vector
     return Assem @ f_G, f_G, f_e
 
-def find_LVL(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndarray) -> [np.ndarray, np.ndarray, np.ndarray]:
+def LVL(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndarray) -> [np.ndarray, np.ndarray, np.ndarray]:
     """ Creates a linearly varying load vector for a frame element
     ### Parameters:
     L : float
         The length of the frame element
     wHat : float
-        The magnitude of the linearly varying load in the local coordinate system
+        The maximum of the linearly varying load in the local coordinate system
     lambdaMat : ndarray
         The transformation matrix for the frame element
     Assem : ndarray
@@ -194,12 +195,12 @@ def find_LVL(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndarray) ->
     # Assemble the load vector
     return Assem @ f_G, f_G, f_e
 
-def find_point_load(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndarray, a: float = -1) -> np.ndarray:
+def point_load(L: float, pHat: float, lambdaMat: np.ndarray, Assem: np.ndarray, a: float = -1) -> np.ndarray:
     """ Creates a point load vector for a frame element
     ### Parameters:
     L : float
         The length of the frame element
-    wHat : float
+    pHat : float
         The magnitude of the point load in the local coordinate system
     lambdaMat : ndarray
         The transformation matrix for the frame element
@@ -218,7 +219,7 @@ def find_point_load(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndar
         a = L / 2
 
     # Find the local point load vector
-    f_e = wHat * np.array([[0],
+    f_e = pHat * np.array([[0],
                            [1-3*(a/L)**2+2*(a/L)**3],
                            [(a**3/L**2)-(2*a**2)/L+a],
                            [0],
@@ -231,7 +232,7 @@ def find_point_load(L: float, wHat: float, lambdaMat: np.ndarray, Assem: np.ndar
     # Assemble the load vector
     return Assem @ f_G, f_G, f_e
 
-def find_axial_UDL(L: float, pHat: float, lambdaMat: np.ndarray, Assem: np.ndarray, ) -> np.ndarray:
+def axial_UDL(L: float, pHat: float, lambdaMat: np.ndarray, Assem: np.ndarray, ) -> np.ndarray:
     """ Creates an axial uniform distributed load vector for a frame element
     ### Parameters:
     L : float
@@ -262,7 +263,7 @@ def find_axial_UDL(L: float, pHat: float, lambdaMat: np.ndarray, Assem: np.ndarr
     # Assemble the load vector
     return Assem @ f_G, f_G, f_e
 
-def find_axial_point_load(L: float, pHat: float, lambdaMat: np.ndarray, Assem: np.ndarray, a: float = -1) -> np.ndarray:
+def axial_point_load(L: float, pHat: float, lambdaMat: np.ndarray, Assem: np.ndarray, a: float = -1) -> np.ndarray:
     """ Creates an axial point load vector for a frame element
     ### Parameters:
     L : float
@@ -299,10 +300,10 @@ def find_axial_point_load(L: float, pHat: float, lambdaMat: np.ndarray, Assem: n
     # Assemble the load vector
     return Assem @ f_G, f_G, f_e
 
-def find_global_point_defelections(x_e: float, L: float, d_e: np.ndarray, angle: float) -> [float, float]:
+def find_global_point_defelections(x: float, L: float, d_e: np.ndarray, angle: float) -> [float, float]:
     """ Find the deflections in global coordinates at a spesifice frame point
     ### Parameters:
-    x_e : float
+    x : float
         The distance from the first node to the point of interest
     L : float
         The length of the frame element
@@ -315,13 +316,13 @@ def find_global_point_defelections(x_e: float, L: float, d_e: np.ndarray, angle:
     out: [float, float]
         The deflections in the X and Y directions in the global coordinate system
     """
-    axial_1 = 1 - x_e/L
-    axial_2 = x_e/L
+    axial_1 = 1 - x/L
+    axial_2 = x/L
 
-    trans_1 = 1 - 3 * (x_e/L)**2 + 2 * (x_e/L)**3
-    trans_2 = (x_e**3/L**2) - (2 * x_e**2)/L + x_e
-    trans_3 = 3 * (x_e/L)**2 - 2 * (x_e/L)**3
-    trans_4 = (x_e**3/L**2) - (x_e**2)/L
+    trans_1 = 1 - 3 * (x/L)**2 + 2 * (x/L)**3
+    trans_2 = (x**3/L**2) - (2 * x**2)/L + x
+    trans_3 = 3 * (x/L)**2 - 2 * (x/L)**3
+    trans_4 = (x**3/L**2) - (x**2)/L
 
     # Find overall deflections in axial and transverse directions
     axial = axial_1 * d_e[0] + axial_2 * d_e[3]
@@ -360,7 +361,7 @@ def find_local_point_defelections(x_e: float, L: float, d_e: np.ndarray) -> [flo
 
     return axial, trans
 
-def find_Strain(d: np.ndarray, L: float) -> float:
+def find_strain(d: np.ndarray, L: float) -> float:
     """ Find the strain in the frame element 
     ### Parameters:
     d : ndarray
@@ -374,7 +375,7 @@ def find_Strain(d: np.ndarray, L: float) -> float:
     """
     return (d[3]-d[0]) / L
 
-def find_Stress(E: float, d: np.ndarray, L: float) -> float:
+def find_stress(E: float, d: np.ndarray, L: float) -> float:
     """ Find the stress in the frame element 
     ### Parameters:
     E : float
