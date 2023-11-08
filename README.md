@@ -4,16 +4,13 @@ This is a python module contaning function to perform simple FEA anlysis of stru
 # Design Philosophy
 This projects loosely follows the TDD process. The test functions are located in method\_test.py. (This has largely been abandoned due to the need to create a large number of test functions for each method.)
 
-# Currently supported methods
-local\_bar - this function creates the stiffness matrix for a bar element in    local coordinates.
-
-global\_bar - This function transforms the stiffness matrix and angle into
-    global coordinates and also creates the transform matrix. 
+# Currently supported elements
+- Bar element with 4 DOF 
+- Frame element with 6 DOF
 
 # Installation
 Currently this module is not available on pip. To import this module clone the repository to the working directory and add the following line to the top of your python file:
 ```from pyfea import pyfea```
 
-# ToDo
-- [ ] Add half span UDL
-- [ ] Add half span LVL
+# Use
+An example of the module in action on a frame based structure can be seen in example.py. Template.ipynb is a jupyter notebook that can be used as a starting point for your own analysis.
