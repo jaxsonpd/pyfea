@@ -1,9 +1,6 @@
 # Python FEA
 This is a python module contaning function to perform simple FEA anlysis of structures
 
-# Design Philosophy
-This projects loosely follows the TDD process. The test functions are located in method\_test.py. (This has largely been abandoned due to the need to create a large number of test functions for each method.)
-
 # Currently supported elements
 - Bar element with 4 DOF 
 - Frame element with 6 DOF
